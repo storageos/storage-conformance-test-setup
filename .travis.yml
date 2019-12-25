@@ -17,7 +17,7 @@ job:
   include:
     - name: "k8s master"
       env:
-        - K8S_VERSION=1.17.0
+        - K8S_VERSION=v1.17.0
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
         - K8S_REPO_VERSION=master
@@ -25,7 +25,7 @@ job:
         - bash test.sh
     - name: "k8s 1.17"
       env:
-        - K8S_VERSION=1.17.0
+        - K8S_VERSION=v1.17.0
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
         - K8S_REPO_VERSION=release-1.17
@@ -33,7 +33,7 @@ job:
         - bash test.sh
     - name: "k8s 1.16"
       env:
-        - K8S_VERSION=1.16.3
+        - K8S_VERSION=v1.16.3
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
         - K8S_REPO_VERSION=release-1.16
@@ -41,7 +41,7 @@ job:
         - bash test.sh
     - name: "k8s 1.15"
       env:
-        - K8S_VERSION=1.15.3
+        - K8S_VERSION=v1.15.3
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
         - K8S_REPO_VERSION=release-1.15
