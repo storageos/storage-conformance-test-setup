@@ -6,8 +6,7 @@ set -Eeuxo pipefail
 go get -v -u github.com/onsi/ginkgo/ginkgo
 go get -v -u github.com/onsi/gomega/...
 
-# Clone k/k repo and build e2e test binary.
-git clone https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes --depth=1
+# Build e2e test binary.
 pushd $GOPATH/src/k8s.io/kubernetes
 make WHAT=test/e2e/e2e.test
 # Test binary created at _output/bin/e2e.test

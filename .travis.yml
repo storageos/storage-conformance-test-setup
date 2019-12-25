@@ -6,6 +6,7 @@ go:
   - 1.13.5
 before_script:
   - sudo apt-get install rsync -y
+  - git clone https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes --depth=1
   - bash setup_cluster.sh
   - bash install_storage.sh
 script:
