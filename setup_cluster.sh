@@ -4,7 +4,9 @@ set -Eeuxo pipefail
 
 K8S_VERSION="${K8S_VERSION:-v1.17.0}"
 KIND_VERSION="${KIND_VERSION:-0.6.1}"
-KIND_NODE_IMAGE_REPO="${KIND_NODE_IMAGE_REPO:-storageos/kind-node}"
+KIND_NODE_IMAGE_REPO="${KIND_NODE_IMAGE_REPO:-kindest/node}"
+KIND_GIT_REPO="${KIND_GIT_REPO:-github.com/kubernetes-sigs/kind}"
+KIND_GIT_REPO_BRANCH="${KIND_GIT_REPO_BRANCH:-master}"
 
 # KIND_NODE can be set to "master" to build KinD node image from k8s master.
 KIND_NODE="${KIND_NODE:-}"
@@ -12,7 +14,7 @@ KIND_NODE="${KIND_NODE:-}"
 enable_lio() {
     echo "Enable LIO"
     sudo apt -y update
-    sudo apt -y install linux-modules-extra-$(uname -r)
+    sudo apt -y install linux-modules-extra-"$(uname -r)"
     sudo mount --make-shared /sys
     sudo mount --make-shared /
     sudo mount --make-shared /dev
@@ -26,16 +28,13 @@ build_kind() {
     if [ "$KIND_NODE" = "master" ]; then
         # Clone the StorageOS fork of kind.
         KIND_IMPORT_PATH=sigs.k8s.io/kind
-        KIND_REPO_DIR=$GOPATH/src/$KIND_IMPORT_PATH
-        KIND_LATEST_STOS_BRANCH=kind-15-dec-19
+        KIND_GIT_REPO_DIR=$GOPATH/src/$KIND_IMPORT_PATH
 
         echo "Cloning kind repo..."
-        git clone https://github.com/storageos/kind $KIND_REPO_DIR
+        git clone --branch "$KIND_GIT_REPO_BRANCH" https://"$KIND_GIT_REPO" "$KIND_GIT_REPO_DIR" --depth 1
 
         echo "Building kind..."
-        pushd $KIND_REPO_DIR
-        git fetch
-        git checkout -b $KIND_LATEST_STOS_BRANCH origin/$KIND_LATEST_STOS_BRANCH
+        pushd "$KIND_GIT_REPO_DIR"
         go mod vendor
         go install -v $KIND_IMPORT_PATH
         popd
@@ -67,11 +66,11 @@ run_kind() {
     echo "Download kind binary..."
     wget -O kind "https://github.com/kubernetes-sigs/kind/releases/download/v$KIND_VERSION/kind-linux-amd64" && chmod +x kind && sudo mv kind /usr/local/bin/
     echo "Download kubectl..."
-    curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+    curl -Lo kubectl "https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl" && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
     echo
 
     echo "Create Kubernetes cluster with kind..."
-    kind create cluster --image $KIND_NODE_IMAGE
+    kind create cluster --image "$KIND_NODE_IMAGE"
 
     echo "Get cluster info..."
     kubectl cluster-info

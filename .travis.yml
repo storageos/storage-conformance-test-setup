@@ -4,10 +4,46 @@ services:
   - docker
 go:
   - 1.13.5
-before_script:
+before_install:
   - sudo apt-get install rsync -y
-  - git clone https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes --depth=1
+  - git clone --branch $K8S_REPO_VERSION https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes --depth=1
   - bash setup_cluster.sh
   - bash install_storage.sh
-script:
-  - bash test.sh
+
+# Skip downloading deps.
+install: true
+
+job:
+  include:
+    - name: "k8s master"
+      env:
+        - K8S_VERSION=1.17.0
+        - KIND_VERSION=0.6.1
+        - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - K8S_REPO_VERSION=master
+      script:
+        - bash test.sh
+    - name: "k8s 1.17"
+      env:
+        - K8S_VERSION=1.17.0
+        - KIND_VERSION=0.6.1
+        - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - K8S_REPO_VERSION=release-1.17
+      script:
+        - bash test.sh
+    - name: "k8s 1.16"
+      env:
+        - K8S_VERSION=1.16.3
+        - KIND_VERSION=0.6.1
+        - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - K8S_REPO_VERSION=release-1.16
+      script:
+        - bash test.sh
+    - name: "k8s 1.15"
+      env:
+        - K8S_VERSION=1.15.3
+        - KIND_VERSION=0.6.1
+        - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - K8S_REPO_VERSION=release-1.15
+      script:
+        - bash test.sh

@@ -15,3 +15,5 @@ a test config is generated, `test-driver.yaml`.
 
 k8s e2e test binary is built and run against the provided storage system as per
 the driver test config.
+
+`K8S_REPO_VERSION` is the version of k8s that's used to build e2e test binary.

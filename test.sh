@@ -7,7 +7,7 @@ go get -v -u github.com/onsi/ginkgo/ginkgo
 go get -v -u github.com/onsi/gomega/...
 
 # Build e2e test binary.
-pushd $GOPATH/src/k8s.io/kubernetes
+pushd "$GOPATH/src/k8s.io/kubernetes"
 make WHAT=test/e2e/e2e.test
 # Test binary created at _output/bin/e2e.test
 TEST_BIN_PATH=$PWD/_output/bin/e2e.test
@@ -22,5 +22,5 @@ export KUBECONFIG="${HOME}/.kube/config"
 
 ginkgo -v -p -focus="External.Storage" \
     -skip="$SKIP" \
-    $TEST_BIN_PATH -- \
-    -storage.testdriver=$PWD/test-driver.yaml
+    "$TEST_BIN_PATH" -- \
+    -storage.testdriver="$PWD/test-driver.yaml"
