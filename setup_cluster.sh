@@ -82,6 +82,7 @@ run_kind() {
 
     echo "Get cluster info..."
     kubectl cluster-info
+    kubectl version
     echo
 
     echo "Wait for kubernetes to be ready"
