@@ -1,0 +1,12 @@
+language: go
+dist: bionic
+services:
+  - docker
+go:
+  - 1.13.5
+before_script:
+  - sudo apt-get install rsync -y
+  - bash setup_cluster.sh
+  - bash install_storage.sh
+script:
+  - bash test.sh
