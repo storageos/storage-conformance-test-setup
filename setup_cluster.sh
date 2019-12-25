@@ -2,13 +2,23 @@
 
 set -Eeuxo pipefail
 
+# Version of k8s to be used for kind node image and kubectl version if not
+# building from the latest k8s by setting KIND_NODE to "latest".
 K8S_VERSION="${K8S_VERSION:-v1.17.0}"
+# k8s repo version to build e2e test binary and kind node image from.
+K8S_REPO_VERSION="${K8S_REPO_VERSION:-master}"
+# KinD version to be downloaded if not building from latest version by setting
+# KIND_NODE to "latest".
 KIND_VERSION="${KIND_VERSION:-0.6.1}"
+# Container repo to be used to build kind image name.
 KIND_NODE_IMAGE_REPO="${KIND_NODE_IMAGE_REPO:-kindest/node}"
+# KinD git repo to build custom version of kind.
 KIND_GIT_REPO="${KIND_GIT_REPO:-github.com/kubernetes-sigs/kind}"
+# KinD git repo branch to build custom version of kind.
 KIND_GIT_REPO_BRANCH="${KIND_GIT_REPO_BRANCH:-master}"
 
-# KIND_NODE can be set to "master" to build KinD node image from k8s master.
+# KIND_NODE can be set to "latest" to build KinD node image from k8s master and
+# latest version of the release-* branches.
 KIND_NODE="${KIND_NODE:-}"
 
 enable_lio() {
@@ -23,9 +33,9 @@ enable_lio() {
 }
 
 build_kind() {
-    # Build kind only if the KIND_NODE is set to master. To build KinD node from
+    # Build kind only if the KIND_NODE is set to latest. To build KinD node from
     # master, the base image needs some StorageOS specific changes.
-    if [ "$KIND_NODE" = "master" ]; then
+    if [ "$KIND_NODE" = "latest" ]; then
         # Clone the StorageOS fork of kind.
         KIND_IMPORT_PATH=sigs.k8s.io/kind
         KIND_GIT_REPO_DIR=$GOPATH/src/$KIND_IMPORT_PATH
@@ -44,18 +54,16 @@ build_kind() {
     fi
 }
 
-# Node image building fails due to insufficient memory as per a known KinD
-# issue https://kind.sigs.k8s.io/docs/user/known-issues/#failure-to-build-node-image.
 build_kind_node() {
-    # Build kind node image if KIND_NODE is set to master. Else, construct a
+    # Build kind node image if KIND_NODE is set to latest. Else, construct a
     # node image name using KIND_NODE_IMAGE_REPO and K8S_VERSION.
-    if [ "$KIND_NODE" = "master" ]; then
+    if [ "$KIND_NODE" = "latest" ]; then
         # Default kind node image name built from master.
         KIND_NODE_IMAGE=kindest/node:latest
 
         echo "Building kind base image..."
         kind build base-image
-        echo "Building kind node image from k/k master..."
+        echo "Building kind node image from latest k/k $K8S_REPO_VERSION..."
         kind build node-image --base-image kindest/base:latest
     else
         KIND_NODE_IMAGE="$KIND_NODE_IMAGE_REPO:$K8S_VERSION"

@@ -6,7 +6,8 @@ go:
   - 1.13.5
 before_install:
   - sudo apt-get install rsync -y
-  - git clone --branch $K8S_REPO_VERSION https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes --depth=1
+  # Do not shallow clone k/k. For building kind node image, git history is needed.
+  - git clone --branch $K8S_REPO_VERSION https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes
   - bash setup_cluster.sh
   - bash install_storage.sh
 
@@ -20,6 +21,9 @@ job:
         - K8S_VERSION=v1.17.0
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - KIND_GIT_REPO=github.com/storageos/kind
+        - KIND_GIT_REPO_BRANCH=kind-15-dec-19
+        - KIND_NODE=latest
         - K8S_REPO_VERSION=master
       script:
         - bash test.sh
@@ -28,6 +32,9 @@ job:
         - K8S_VERSION=v1.17.0
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - KIND_GIT_REPO=github.com/storageos/kind
+        - KIND_GIT_REPO_BRANCH=kind-15-dec-19
+        - KIND_NODE=latest
         - K8S_REPO_VERSION=release-1.17
       script:
         - bash test.sh
@@ -36,6 +43,9 @@ job:
         - K8S_VERSION=v1.16.3
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - KIND_GIT_REPO=github.com/storageos/kind
+        - KIND_GIT_REPO_BRANCH=kind-15-dec-19
+        - KIND_NODE=latest
         - K8S_REPO_VERSION=release-1.16
       script:
         - bash test.sh
@@ -44,6 +54,9 @@ job:
         - K8S_VERSION=v1.15.3
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
+        - KIND_GIT_REPO=github.com/storageos/kind
+        - KIND_GIT_REPO_BRANCH=kind-15-dec-19
+        - KIND_NODE=latest
         - K8S_REPO_VERSION=release-1.15
       script:
         - bash test.sh
