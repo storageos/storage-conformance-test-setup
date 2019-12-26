@@ -6,12 +6,14 @@ set -Eeuxo pipefail
 # for that version.
 BROKEN_VERSION="v1.15"
 
+K8S_VERSION="${K8S_VERSION:-v1.17.0}"
+
 # Install the test dependencies
 go get -v -u github.com/onsi/ginkgo/ginkgo
 go get -v -u github.com/onsi/gomega/...
 
 # Build e2e test binary.
-if [[ "$BROKEN_VERSION" == *"v1.15"* ]]; then
+if [[ "$BROKEN_VERSION" == *"$K8S_VERSION"* ]]; then
     # Building e2e test binary fails for v1.15. Download a pre-built version
     # for now.
     curl -Lo kubernetes-test.tar.gz https://dl.k8s.io/v1.15.7/kubernetes-test-linux-amd64.tar.gz

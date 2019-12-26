@@ -40,7 +40,7 @@ job:
         - bash test.sh
     - name: "k8s 1.16"
       env:
-        - K8S_VERSION=v1.16.3
+        - K8S_VERSION=v1.16.4
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
         - KIND_GIT_REPO=github.com/storageos/kind
@@ -51,7 +51,7 @@ job:
         - bash test.sh
     - name: "k8s 1.15"
       env:
-        - K8S_VERSION=v1.15.3
+        - K8S_VERSION=v1.15.7
         - KIND_VERSION=0.6.1
         - KIND_NODE_IMAGE_REPO=storageos/kind-node
         - KIND_GIT_REPO=github.com/storageos/kind
