@@ -45,8 +45,8 @@ build_kind() {
 
         echo "Building kind..."
         pushd "$KIND_GIT_REPO_DIR"
-        go mod vendor
-        go install -v $KIND_IMPORT_PATH
+            go mod vendor
+            go install -v $KIND_IMPORT_PATH
         popd
 
         echo "Checking the installed kind..."
@@ -71,8 +71,12 @@ build_kind_node() {
 }
 
 run_kind() {
-    echo "Download kind binary..."
-    wget -O kind "https://github.com/kubernetes-sigs/kind/releases/download/v$KIND_VERSION/kind-linux-amd64" && chmod +x kind && sudo mv kind /usr/local/bin/
+    # Download kind if it's not built.
+    if [ "$KIND_NODE" != "latest" ]; then
+        echo "Download kind binary..."
+        wget -O kind "https://github.com/kubernetes-sigs/kind/releases/download/v$KIND_VERSION/kind-linux-amd64" && chmod +x kind && sudo mv kind /usr/local/bin/
+    fi
+
     echo "Download kubectl..."
     curl -Lo kubectl "https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/kubectl" && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
     echo
