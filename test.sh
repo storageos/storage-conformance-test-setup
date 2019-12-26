@@ -13,7 +13,8 @@ go get -v -u github.com/onsi/ginkgo/ginkgo
 go get -v -u github.com/onsi/gomega/...
 
 # Build e2e test binary.
-if [[ "$BROKEN_VERSION" == *"$K8S_VERSION"* ]]; then
+# Check if it's v1.15 version.
+if [[ "$K8S_VERSION" == *"$BROKEN_VERSION"* ]]; then
     # Building e2e test binary fails for v1.15. Download a pre-built version
     # for now.
     curl -Lo kubernetes-test.tar.gz https://dl.k8s.io/v1.15.7/kubernetes-test-linux-amd64.tar.gz
@@ -29,7 +30,7 @@ fi
 
 SKIP="\[Serial\]|\[Disruptive\]|\[Feature:|Disruptive|different\s+node"
 # Skip following tests temporarily. Need to investigate.
-SKIP+="|should fail in binding dynamic provisioned PV to PVC \[Slow\]"
+SKIP+="|should fail in binding dynamic provisioned PV to PVC"
 
 # Export KUBECONFIG. This is used by the e2e test binary.
 export KUBECONFIG="${HOME}/.kube/config"
