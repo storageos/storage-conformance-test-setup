@@ -5,6 +5,7 @@ services:
 go:
   - 1.13.5
 before_install:
+  - bash lint.sh
   - sudo apt-get install rsync -y
   # Do not shallow clone k/k. For building kind node image, git history is needed.
   - git clone --branch $K8S_REPO_VERSION https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes
