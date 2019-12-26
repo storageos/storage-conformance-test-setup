@@ -33,10 +33,9 @@ enable_lio() {
 }
 
 build_kind() {
-    # Build kind only if the KIND_NODE is set to latest. To build KinD node from
-    # master, the base image needs some StorageOS specific changes.
+    # Build kind only if the KIND_NODE is set to latest.
     if [ "$KIND_NODE" = "latest" ]; then
-        # Clone the StorageOS fork of kind.
+        # Clone kind repo.
         KIND_IMPORT_PATH=sigs.k8s.io/kind
         KIND_GIT_REPO_DIR=$GOPATH/src/$KIND_IMPORT_PATH
 
