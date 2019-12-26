@@ -15,7 +15,7 @@ before_install:
 # Skip downloading deps.
 install: true
 
-job:
+jobs:
   include:
     - name: "k8s master"
       env:
