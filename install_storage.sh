@@ -139,18 +139,17 @@ EOF
 }
 
 # Build kube-scheduler container image and load the image in KinD.
-build_kube_scheduler() {
+build_kube_scheduler_image() {
     pushd "$GOPATH/src/k8s.io/kubernetes"
-        KUBE_BUILD_PLATFORMS=linux/amd64 make kube-scheduler
         generate_kube_scheduler_dockerfile > "Dockerfile"
-        docker build -t k8s.io/kube-scheduler:test -f Dockerfile _output/bin/
+        docker build -t k8s.io/kube-scheduler:test -f Dockerfile _output/dockerized/bin/linux/amd64/
         kind load docker-image k8s.io/kube-scheduler:test
         rm Dockerfile
     popd
 }
 
 install() {
-    build_kube_scheduler
+    build_kube_scheduler_image
     generate_stos_cluster_config > "storageoscluster_cr.yaml"
     install_stos
     generate_driver_config > "test-driver.yaml"
