@@ -78,7 +78,7 @@ spec:
   secretRefNamespace: "default"
   namespace: "storageos"
   images:
-    hyperkubeContainer: gcr.io/google_containers/hyperkube:$K8S_VERSION
+    kubeSchedulerContainer: k8s.io/kube-scheduler:test
   csi:
     enable: true
 EOF
@@ -130,7 +130,26 @@ DriverInfo:
 EOF
 }
 
+generate_kube_scheduler_dockerfile() {
+    cat <<EOF
+FROM gcr.io/distroless/base-debian10
+COPY kube-scheduler /usr/local/bin/kube-scheduler
+CMD ["/bin/sh", "-c"]
+EOF
+}
+
+# Build kube-scheduler container image and load the image in KinD.
+build_kube_scheduler_image() {
+    pushd "$GOPATH/src/k8s.io/kubernetes"
+        generate_kube_scheduler_dockerfile > "Dockerfile"
+        docker build -t k8s.io/kube-scheduler:test -f Dockerfile _output/dockerized/bin/linux/amd64/
+        kind load docker-image k8s.io/kube-scheduler:test
+        rm Dockerfile
+    popd
+}
+
 install() {
+    build_kube_scheduler_image
     generate_stos_cluster_config > "storageoscluster_cr.yaml"
     install_stos
     generate_driver_config > "test-driver.yaml"
