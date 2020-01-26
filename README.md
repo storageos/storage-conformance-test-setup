@@ -2,7 +2,7 @@
 
 ### StorageOS Test Status
 
-[![Build Status](https://travis-ci.org/darkowlzz/storage-conformance-test-setup.svg?branch=stos)](https://travis-ci.org/darkowlzz/storage-conformance-test-setup)
+[![Build Status](https://travis-ci.org/storageos/storage-conformance-test-setup.svg?branch=stos2)](https://travis-ci.org/storageos/storage-conformance-test-setup)
 
 
 k8s Storage conformance tests can be run against the latest, unreleased,

@@ -79,9 +79,12 @@ spec:
   namespace: "storageos"
   images:
     kubeSchedulerContainer: k8s.io/kube-scheduler:test
-    node: $NODE_CONTAINER
+    nodeContainer: $NODE_CONTAINER
   csi:
     enable: true
+    enableProvisionCreds: true
+    enableControllerPublishCreds: true
+    enableNodePublishCreds: true
   kvBackend:
     address: etcd-client.default.svc.cluster.local:2379
 EOF
@@ -106,7 +109,9 @@ install_stos() {
         kubectl apply -f storageos-operator.yaml
         # Wait for operator to be ready.
         until kubectl -n storageos-operator get deployment storageos-cluster-operator --no-headers -o go-template='{{.status.readyReplicas}}' | grep -q 1; do sleep 3; done
-        # Create credentials and storageos cluster.
+        # Append CSI credentials to the base secret.
+        csi_creds >> deploy/secret.yaml
+        # Create credentials.
         kubectl apply -f deploy/secret.yaml
     popd
 
@@ -194,6 +199,18 @@ install_etcd () {
     # Wait for etcd cluster to be ready.
     until kubectl -n default get pod -l app=etcd -l etcd_cluster=etcd -o go-template='{{range .items}}{{.status.phase}}{{end}}' | grep -q Running; do sleep 3; done
     echo
+}
+
+# CSI credentials. Append the default secret with these CSI credentials.
+csi_creds () {
+    cat <<EOF
+  csiProvisionUsername: c3RvcmFnZW9z
+  csiProvisionPassword: c3RvcmFnZW9z
+  csiControllerPublishUsername: c3RvcmFnZW9z
+  csiControllerPublishPassword: c3RvcmFnZW9z
+  csiNodePublishUsername: c3RvcmFnZW9z
+  csiNodePublishPassword: c3RvcmFnZW9z
+EOF
 }
 
 install() {
