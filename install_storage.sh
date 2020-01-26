@@ -97,6 +97,11 @@ install_stos() {
         make generate-install-manifest
         # Find and replace the operator container image with a develop image.
         sed -i 's/storageos\/cluster-operator:test/darkowlzz\/operator:v0.0.454/' storageos-operator.yaml
+        # Disable scheduler webhook.
+        # NOTE: This is the only boolean in the file at the moment. This will
+        # break and show unexpected results if any new boolean is added in the
+        # manifest.
+        sed -i 's/false/true/' storageos-operator.yaml
         # Install the operator.
         kubectl apply -f storageos-operator.yaml
         # Wait for operator to be ready.
@@ -111,7 +116,7 @@ install_stos() {
     until kubectl -n storageos get daemonset storageos-daemonset --no-headers -o go-template='{{.status.numberReady}}' | grep -q 1; do sleep 5; done
 
     # Uncomment to print all the storageos pod logs.
-    # print_pod_details_and_logs storageos
+    print_pod_details_and_logs storageos
 }
 
 # Driver config for the e2e test.
