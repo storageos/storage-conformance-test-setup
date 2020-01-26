@@ -82,6 +82,8 @@ spec:
     node: $NODE_CONTAINER
   csi:
     enable: true
+  kvBackend:
+    address: etcd-client.default.svc.cluster.local:2379
 EOF
 }
 
@@ -170,9 +172,29 @@ build_kube_scheduler_image() {
     popd
 }
 
+install_etcd () {
+    echo "Install Etcd Operator"
+
+    # Install etcd operator pre-reqs.
+    kubectl create -f ./etcd/etcd-rbac.yaml
+    # Install etcd operator.
+    kubectl create -f ./etcd/etcd-operator.yaml
+
+    # Wait for etcd operator to be ready.
+    until kubectl -n default get deployment etcd-operator --no-headers -o go-template='{{.status.readyReplicas}}' | grep -q 1; do sleep 3; done
+
+    # Install etcd cluster.
+    kubectl create -f ./etcd/etcd-cluster.yaml
+
+    # Wait for etcd cluster to be ready.
+    until kubectl -n default get pod -l app=etcd -l etcd_cluster=etcd -o go-template='{{range .items}}{{.status.phase}}{{end}}' | grep -q Running; do sleep 3; done
+    echo
+}
+
 install() {
     build_kube_scheduler_image
     generate_stos_cluster_config > "storageoscluster_cr.yaml"
+    install_etcd
     install_stos
     generate_sc > "stos-sc.yaml"
     generate_driver_config > "test-driver.yaml"
