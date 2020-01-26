@@ -79,6 +79,7 @@ spec:
   namespace: "storageos"
   images:
     kubeSchedulerContainer: k8s.io/kube-scheduler:test
+    node: $NODE_CONTAINER
   csi:
     enable: true
 EOF
@@ -93,7 +94,7 @@ install_stos() {
     pushd "$STOS_GIT_REPO_DIR"
         make generate-install-manifest
         # Find and replace the operator container image with a develop image.
-        sed -i 's/cluster-operator:test/cluster-operator:develop/' storageos-operator.yaml
+        sed -i 's/storageos\/cluster-operator:test/darkowlzz\/operator:v0.0.454/' storageos-operator.yaml
         # Install the operator.
         kubectl apply -f storageos-operator.yaml
         # Wait for operator to be ready.
@@ -115,7 +116,8 @@ install_stos() {
 generate_driver_config () {
     cat <<EOF
 StorageClass:
-  FromName: true
+  FromName: false
+  FromFile: $PWD/stos-sc.yaml
 SnapshotClass:
   FromName: false
 DriverInfo:
@@ -125,8 +127,28 @@ DriverInfo:
     Min: "1Gi"
   Capabilities:
     persistence: true
-    multipods: true
     exec: true
+EOF
+}
+
+generate_sc () {
+    cat <<EOF
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: storageos-sc
+parameters:
+  csi.storage.k8s.io/controller-publish-secret-name: csi-controller-publish-secret
+  csi.storage.k8s.io/controller-publish-secret-namespace: storageos
+  csi.storage.k8s.io/fstype: ext4
+  csi.storage.k8s.io/node-publish-secret-name: csi-node-publish-secret
+  csi.storage.k8s.io/node-publish-secret-namespace: storageos
+  csi.storage.k8s.io/provisioner-secret-name: csi-provisioner-secret
+  csi.storage.k8s.io/provisioner-secret-namespace: storageos
+  pool: default
+provisioner: $PROVISIONER
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
 EOF
 }
 
@@ -152,6 +174,7 @@ install() {
     build_kube_scheduler_image
     generate_stos_cluster_config > "storageoscluster_cr.yaml"
     install_stos
+    generate_sc > "stos-sc.yaml"
     generate_driver_config > "test-driver.yaml"
 }
 

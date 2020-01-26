@@ -39,25 +39,25 @@ jobs:
         - K8S_REPO_VERSION=release-1.17
       script:
         - bash test.sh
-    - name: "k8s 1.16"
-      env:
-        - K8S_VERSION=v1.16.4
-        - KIND_VERSION=0.6.1
-        - KIND_NODE_IMAGE_REPO=storageos/kind-node
-        - KIND_GIT_REPO=github.com/storageos/kind
-        - KIND_GIT_REPO_BRANCH=kind-15-dec-19
-        - KIND_NODE=latest
-        - K8S_REPO_VERSION=release-1.16
-      script:
-        - bash test.sh
-    - name: "k8s 1.15"
-      env:
-        - K8S_VERSION=v1.15.7
-        - KIND_VERSION=0.6.1
-        - KIND_NODE_IMAGE_REPO=storageos/kind-node
-        - KIND_GIT_REPO=github.com/storageos/kind
-        - KIND_GIT_REPO_BRANCH=kind-15-dec-19
-        - KIND_NODE=latest
-        - K8S_REPO_VERSION=release-1.15
-      script:
-        - bash test.sh
+    # - name: "k8s 1.16"
+    #   env:
+    #     - K8S_VERSION=v1.16.4
+    #     - KIND_VERSION=0.6.1
+    #     - KIND_NODE_IMAGE_REPO=storageos/kind-node
+    #     - KIND_GIT_REPO=github.com/storageos/kind
+    #     - KIND_GIT_REPO_BRANCH=kind-15-dec-19
+    #     - KIND_NODE=latest
+    #     - K8S_REPO_VERSION=release-1.16
+    #   script:
+    #     - bash test.sh
+    # - name: "k8s 1.15"
+    #   env:
+    #     - K8S_VERSION=v1.15.7
+    #     - KIND_VERSION=0.6.1
+    #     - KIND_NODE_IMAGE_REPO=storageos/kind-node
+    #     - KIND_GIT_REPO=github.com/storageos/kind
+    #     - KIND_GIT_REPO_BRANCH=kind-15-dec-19
+    #     - KIND_NODE=latest
+    #     - K8S_REPO_VERSION=release-1.15
+    #   script:
+    #     - bash test.sh
